@@ -1,0 +1,12 @@
+#!/command/with-contenv bashio
+# vim: ft=bash
+# shellcheck shell=bash
+# ==============================================================================
+# Start postfix service
+# ==============================================================================
+
+set -e
+
+bashio::log.info "Running postfix..."
+/usr/sbin/postfix start-fg
+bashio::log.info "Running postfix... Done"

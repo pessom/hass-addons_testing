@@ -1,0 +1,27 @@
+---
+version: 0.0.4
+slug: postfix_hass_testing
+name: postfix
+description: relay emails
+url: https://github.com/pessom/hass-addons/tree/main/postfix_hass_testing
+arch:
+  - aarch64
+  - amd64
+  - armhf
+  - armv7
+  - i386
+init: false
+map:
+  - ssl
+  - share
+options:
+  log_level: info
+  myhostname: null
+  mynetworks: [ ]
+ports:
+  25/tcp: 25
+schema:
+  log_level: list(trace|debug|info|notice|warning|error|fatal)
+  myhostname: str
+  mynetworks:
+    - str

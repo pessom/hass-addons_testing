@@ -1,0 +1,42 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Init postfix - generate config from options
+# ==============================================================================
+
+set -e
+
+bashio::log.info "Running init script..."
+
+if ! DOMAIN=$(bashio::config 'myhostname'); then
+    bashio::log.error "Missing 'myhostname' configuration."
+    exit 1
+fi
+
+if ! mynetworks=$(bashio::config 'mynetworks | join(", ")'); then
+    bashio::log.error "Missing or invalid 'mynetworks' configuration."
+    exit 1
+fi
+
+# Ensures the postfix data is stored outside the container
+if ! bashio::fs.directory_exists '/data/postfix'; then
+    bashio::log.info "Created data directory"
+    mkdir -p /data/postfix
+fi
+
+bashio::log.info "Set hostname to $DOMAIN..."
+postconf -e myhostname="$DOMAIN"
+postconf -e mydestination="localhost"
+echo "$DOMAIN" > /etc/mailname
+echo "$DOMAIN" > /etc/hostname
+bashio::log.info "Set hostname to $DOMAIN... Done"
+
+bashio::log.info "Configure mynetworks..."
+if grep -q "^mynetworks = " /etc/postfix/main.cf; then
+    sed -i "s|^mynetworks = .*|mynetworks = ${mynetworks}|" /etc/postfix/main.cf
+    bashio::log.info "mynetworks ${mynetworks} - Updated"
+else
+    echo "mynetworks = ${mynetworks}" >> /etc/postfix/main.cf
+    bashio::log.info "mynetworks ${mynetworks} - Added in config"
+fi
+bashio::log.info "Init script done!"
