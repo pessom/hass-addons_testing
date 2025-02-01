@@ -1,0 +1,44 @@
+name: Sync Dev to Stable
+
+on:
+  workflow_dispatch:
+    inputs:
+      SYNC_DIR:
+        description: "Select directory to sync to stable"
+        required: true
+        type: choice
+        options:
+          - postfix_hass
+          - clickhouse_hass
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout dev repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Clone stable repo
+        run: |
+          git config --global user.name "GitHub Actions Sync"
+          git config --global user.email "hass-addons_testing@github.com"
+
+          git clone --depth 1 https://github.com/pessom/hass-addons.git stable-repo
+
+      - name: Sync addon for stable version
+        run: |
+          rsync -av --exclude='.git/' --delete ${{ github.event.inputs.SYNC_DIR }}/ stable-repo/${{ github.event.inputs.SYNC_DIR }}/          
+
+      - name: Update to stable configuration for postfix_hass
+        if: github.event.inputs.SYNC_DIR == 'postfix_hass'
+        run: |
+          sed -i 's/postfix_hass_testing/postfix_hass/' postfix_hass/config.yaml
+
+      - name: Commit and push to stable repo
+        run: |
+          cd stable-repo
+          git add .
+          git commit -m "Sync ${{ github.event.inputs.SYNC_DIR }} from testing to stable" || echo "No changes to commit"
+          git push https://x-access-token:${{ secrets.STABLE_REPO_TOKEN }}@github.com/pessom/hass-addons.git main
