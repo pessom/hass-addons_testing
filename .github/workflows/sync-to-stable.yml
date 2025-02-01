@@ -34,7 +34,7 @@ jobs:
       - name: Update to stable configuration for postfix_hass
         if: github.event.inputs.SYNC_DIR == 'postfix_hass'
         run: |
-          sed -i 's/postfix_hass_testing/postfix_hass/' postfix_hass/config.yaml
+          sed -i 's/postfix_hass_testing/postfix_hass/' stable-repo/postfix_hass/config.yaml
 
       - name: Commit and push to stable repo
         run: |
