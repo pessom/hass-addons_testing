@@ -1,0 +1,39 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Init clickhouse-server - generate config from options
+# ==============================================================================
+
+set -e
+
+bashio::log.info "Running init script..."
+
+if [ ! -d "/data/config/clickhouse-server" ]; then
+    bashio::log.info "Create dir for configurations clickhouse-server..."
+    mkdir -p /data/config/clickhouse-server
+    cp -r /etc/clickhouse-server/* /data/config/clickhouse-server/
+fi
+
+if [ ! -d "/data/config/clickhouse-client" ]; then
+    bashio::log.info "Create dir for configurations clickhouse-client..."
+    mkdir -p /data/config/clickhouse-client
+    cp -r /etc/clickhouse-client/* /data/config/clickhouse-client/
+fi
+
+if [ ! -d "/data/clickhouse/data" ]; then
+    bashio::log.info "Create dir for data clickhouse-server..."
+    mkdir -p /data/clickhouse/data
+    cp -r /var/lib/clickhouse/* /data/clickhouse/data/
+fi
+
+# Указываем ClickHouse использовать конфигурацию из /data
+bashio::log.info "Использую конфигурацию из /data/config/clickhouse-server..."
+ln -sf /data/config/clickhouse-server /etc/clickhouse-server
+
+# Настраиваем путь для хранения данных в конфигурации
+sed -i 's|<path>/var/lib/clickhouse/</path>|<path>/data/clickhouse/data/</path>|' /data/config/clickhouse-server/config.xml
+
+chown clickhouse:clickhouse /data/clickhouse/data/
+chmod ugo+Xrw -R /data/clickhouse/data/ /data/config/clickhouse-server/ /data/config/clickhouse-client/
+
+bashio::log.info "Init script done!"

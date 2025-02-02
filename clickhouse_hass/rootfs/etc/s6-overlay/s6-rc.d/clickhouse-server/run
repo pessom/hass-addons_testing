@@ -1,0 +1,11 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Init postfix - generate config from options
+# ==============================================================================
+
+set -e
+
+bashio::log.info "Starting clickhouse-server..."
+exec /usr/bin/clickhouse-server
+bashio::log.info "clickhouse-server started!"
