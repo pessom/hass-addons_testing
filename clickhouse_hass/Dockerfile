@@ -27,7 +27,7 @@ COPY --from=clickhouse-donor /etc/clickhouse-client/ /opt/etc/clickhouse-client/
 RUN mkdir -p /lib64 && ln -sf /lib/x86_64-linux-gnu/ld-2.31.so /lib64/ld-linux-x86-64.so.2
 
 RUN addgroup -S -g 101 clickhouse && \
-    adduser -S -h "/var/lib/clickhouse" -s /bin/bash -G clickhouse -g "ClickHouse server" -u 101 clickhouse
+    adduser -S -h "${DEFAULT_DATA_DIR}" -s /bin/bash -G clickhouse -g "ClickHouse server" -u 101 clickhouse
 
 RUN cd /tmp \
     && for package in ${PACKAGES}; do \
@@ -45,6 +45,7 @@ RUN cd /tmp \
     && rm /tmp/*.tgz /install -r \
     && apk add --no-cache tzdata \
     && cp /usr/share/zoneinfo/UTC /etc/localtime \
-    && echo "UTC" > /etc/timezone
+    && echo "UTC" > /etc/timezone \
+    && rm -rf /etc/clickhouse-server /etc/clickhouse-client
 
 COPY rootfs /
