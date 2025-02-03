@@ -37,3 +37,4 @@ chown clickhouse:clickhouse /data/clickhouse/data/
 chmod ugo+Xrw -R /data/clickhouse/data/ /data/config/clickhouse-server/ /data/config/clickhouse-client/
 
 bashio::log.info "Init script done!"
+
