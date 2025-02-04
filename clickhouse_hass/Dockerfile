@@ -21,8 +21,8 @@ ENV LANG=en_US.UTF-8 \
 
 COPY --from=clickhouse-donor /lib/x86_64-linux-gnu/libc.so.6 /lib/x86_64-linux-gnu/libdl.so.2 /lib/x86_64-linux-gnu/libm.so.6 /lib/x86_64-linux-gnu/libpthread.so.0 /lib/x86_64-linux-gnu/librt.so.1 /lib/x86_64-linux-gnu/libnss_dns.so.2 /lib/x86_64-linux-gnu/libnss_files.so.2 /lib/x86_64-linux-gnu/libresolv.so.2 /lib/x86_64-linux-gnu/ld-2.31.so /lib/x86_64-linux-gnu/
 COPY --from=clickhouse-donor /etc/nsswitch.conf /etc/
-COPY --from=clickhouse-donor /etc/clickhouse-server/ /opt/etc/clickhouse-server/
-COPY --from=clickhouse-donor /etc/clickhouse-client/ /opt/etc/clickhouse-client/
+#COPY --from=clickhouse-donor /etc/clickhouse-server/config.xml /opt/etc/clickhouse-server/
+#COPY --from=clickhouse-donor /etc/clickhouse-client/ /opt/etc/clickhouse-client/
 
 RUN mkdir -p /lib64 && ln -sf /lib/x86_64-linux-gnu/ld-2.31.so /lib64/ld-linux-x86-64.so.2
 
@@ -45,7 +45,10 @@ RUN cd /tmp \
     && rm /tmp/*.tgz /install -r \
     && apk add --no-cache tzdata xmlstarlet \
     && cp /usr/share/zoneinfo/UTC /etc/localtime \
-    && echo "UTC" > /etc/timezone \
-    && rm -rf /etc/clickhouse-server /etc/clickhouse-client
+    && echo "UTC" > /etc/timezone
+
+RUN mkdir -p /opt/etc \
+    && mv /etc/clickhouse-server /opt/etc/ && mv /etc/clickhouse-client /opt/etc/ \
+    && mkdir /opt/etc/clickhouse-server/config.d
 
 COPY rootfs /
