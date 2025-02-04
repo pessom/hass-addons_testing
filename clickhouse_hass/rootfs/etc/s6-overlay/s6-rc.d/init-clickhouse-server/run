@@ -38,6 +38,13 @@ xmlstarlet ed -L \
     -s "/clickhouse/logger" -t elem -n "errorlog" \
     -s "/clickhouse/logger" -t elem -n "console" -v "1" \
     -s "/clickhouse" -t elem -n "path" -v "/data/clickhouse/data" \
+    -s "/clickhouse" -t elem -n "tmp_path" -v "/data/clickhouse/data/tmp/" \
+    -s "/clickhouse" -t elem -n "custom_cached_disks_base_directory" -v "/data/clickhouse/data/caches/" \
+    -s "/clickhouse" -t elem -n "user_files_path" -v "/data/clickhouse/data/user_files/" \
+    -s "/clickhouse" -t elem -n "format_schema_path" -v "/data/clickhouse/data/format_schemas/" \
+    -s "/clickhouse" -t elem -n "user_directories" -v "" \
+    -s "/clickhouse/user_directories" -t elem -n "local_directory" -v "" \
+    -s "/clickhouse/user_directories/local_directory" -t elem -n "path" -v "/data/clickhouse/data/access/" \
     -s "/clickhouse" -t elem -n "listen_host" -v "0.0.0.0" \
     /data/config/clickhouse-server/config.d/hass.xml
 
