@@ -27,8 +27,8 @@ if [ ! -d "/data/clickhouse/data" ]; then
 fi
 
 # Указываем ClickHouse использовать конфигурацию из /data
-bashio::log.info "Использую конфигурацию из /data/config/clickhouse-server..."
-ln -sf /data/config/clickhouse-server /etc/
+#bashio::log.info "Использую конфигурацию из /data/config/clickhouse-server..."
+#ln -sf /data/config/clickhouse-server /etc/
 
 # Настраиваем путь для хранения данных в конфигурации
 sed -i 's|<path>/var/lib/clickhouse/</path>|<path>/data/clickhouse/data/</path>|' /data/config/clickhouse-server/config.xml
