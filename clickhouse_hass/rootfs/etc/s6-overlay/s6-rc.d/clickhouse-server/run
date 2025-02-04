@@ -7,5 +7,5 @@
 set -e
 
 bashio::log.info "Starting clickhouse-server..."
-exec /usr/bin/clickhouse-server --config-file=/data/config/clickhouse-server/config.xml --log-file=/dev/stdout --errorlog-file=/dev/stderr
+exec /usr/bin/clickhouse-server --config-file=/data/config/clickhouse-server/config.xml
 bashio::log.info "clickhouse-server started!"
