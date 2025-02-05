@@ -1,5 +1,5 @@
 ---
-version: 0.0.0-1
+version: 0.0.1
 slug: clickhouse_hass_testing
 name: clickhouse_testing
 description: clickhouse-server

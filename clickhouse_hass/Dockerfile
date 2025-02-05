@@ -6,7 +6,8 @@ FROM $BUILD_FROM
 
 ARG REPOSITORY="https://packages.clickhouse.com/tgz/stable"
 ARG VERSION="25.1.2.3"
-ARG PACKAGES="clickhouse-client clickhouse-odbc-bridge clickhouse-server clickhouse-common-static clickhouse-library-bridge"
+ARG PACKAGES="clickhouse-client clickhouse-server clickhouse-common-static"
+# optionals package, not needed now - clickhouse-odbc-bridge, clickhouse-library-bridge
 ARG DEFAULT_CLIENT_CONFIG_DIR="/data/config/clickhouse-client/"
 ARG DEFAULT_SERVER_CONFIG_DIR="/data/config/clickhouse-server/"
 ARG DEFAULT_DATA_DIR="/data/clickhouse/data/"

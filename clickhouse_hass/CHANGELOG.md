@@ -2,4 +2,4 @@
 
 ## 0.0.1
 
-- Initial release
+- Run clickhouse-server in a Home Assistant add-on
