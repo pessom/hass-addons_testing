@@ -35,13 +35,13 @@ jobs:
         if: github.event.inputs.SYNC_DIR == 'postfix_hass'
         run: |
           sed -i 's/postfix_hass_testing/postfix_hass/' stable-repo/postfix_hass/config.yaml
-          sed -i 's/postfix_testing/postfix/' stable-repo/postfix_hass/config.yaml
+          sed -i 's/Postfix_testing/Postfix/' stable-repo/postfix_hass/config.yaml
 
       - name: Update to stable configuration for Clickhouse
         if: github.event.inputs.SYNC_DIR == 'clickhouse_hass'
         run: |
           sed -i 's/clickhouse_hass_testing/clickhouse_hass_testing/' stable-repo/clickhouse_hass/config.yaml
-          sed -i 's/clickhouse_testing/clickhouse/' stable-repo/clickhouse_hass/config.yaml
+          sed -i 's/Clickhouse_testing/Clickhouse/' stable-repo/clickhouse_hass/config.yaml
 
       - name: Commit and push to stable repo
         run: |
