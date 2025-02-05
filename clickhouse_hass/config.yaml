@@ -10,11 +10,11 @@ init: false
 map:
   - ssl
   - share
-options:
-  http_port: 8124
-  tcp_port: 9000
-  mysq_port: 9004
-  postgresql_port: 9005
+#options:
+#  http_port: 8124
+#  tcp_port: 9000
+#  mysq_port: 9004
+#  postgresql_port: 9005
 schema:
   http_port: port
   tcp_port: port
