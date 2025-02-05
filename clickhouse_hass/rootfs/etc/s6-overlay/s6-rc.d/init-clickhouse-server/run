@@ -8,8 +8,6 @@ set -e
 
 bashio::log.info "Running init script..."
 
-
-
 if [ ! -d "/data/config/clickhouse-server" ]; then
     bashio::log.info "Create dir for configurations clickhouse-server..."
     mkdir -p /data/config/
@@ -46,6 +44,10 @@ xmlstarlet ed -L \
     -s "/clickhouse/user_directories" -t elem -n "local_directory" -v "" \
     -s "/clickhouse/user_directories/local_directory" -t elem -n "path" -v "/data/clickhouse/data/access/" \
     -s "/clickhouse" -t elem -n "listen_host" -v "0.0.0.0" \
+    -s "/clickhouse" -t elem -n "http_port" -v "8124" \
+    -s "/clickhouse" -t elem -n "tcp_port" -v "9000" \
+    -s "/clickhouse" -t elem -n "mysql_port" -v "9004" \
+    -s "/clickhouse" -t elem -n "postgresql_port" -v "9005" \
     /data/config/clickhouse-server/config.d/hass.xml
 
 chown clickhouse:clickhouse /data/clickhouse/data/
