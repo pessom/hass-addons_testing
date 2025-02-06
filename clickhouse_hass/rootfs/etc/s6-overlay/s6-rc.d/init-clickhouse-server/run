@@ -8,50 +8,63 @@ set -e
 
 bashio::log.info "Running init script..."
 
-if [ ! -d "/data/config/clickhouse-server" ]; then
-    bashio::log.info "Create dir for configurations clickhouse-server..."
-    mkdir -p /data/config/
-    cp -r /opt/etc/clickhouse-server /data/config
-fi
+DATA_CONFIG="/data/config"
+CLICKHOUSE_DATA="/data/clickhouse/data"
+HASS_CONFIG="$DATA_CONFIG/clickhouse-server/config.d/hass.xml"
 
-if [ ! -d "/data/config/clickhouse-client" ]; then
-    bashio::log.info "Create dir for configurations clickhouse-client..."
-    mkdir -p /data/config/clickhouse-client
-    cp -r /opt/etc/clickhouse-client /data/config/
-fi
+create_and_copy_dir() {
+    local src=$1
+    local dest=$2
+    if [ ! -d "$dest" ]; then
+        bashio::log.info "Creating directory $dest..."
+        mkdir -p "$dest" || { bashio::log.error "Failed to create directory $dest"; exit 1; }
+        cp -r "$src" "$dest" || { bashio::log.error "Failed to copy from $src to $dest"; exit 1; }
+    fi
+}
 
-if [ ! -d "/data/clickhouse/data" ]; then
-    bashio::log.info "Create dir for data clickhouse-server..."
-    mkdir -p /data/clickhouse/data
-#    cp -r /var/lib/clickhouse/* /data/clickhouse/data/
+create_and_copy_dir "/opt/etc/clickhouse-server" "$DATA_CONFIG/clickhouse-server"
+create_and_copy_dir "/opt/etc/clickhouse-client" "$DATA_CONFIG/clickhouse-client"
+
+if [ ! -d "$CLICKHOUSE_DATA" ]; then
+    bashio::log.info "Creating directory for clickhouse-server data..."
+    mkdir -p "$CLICKHOUSE_DATA" || { bashio::log.error "Failed to create directory $CLICKHOUSE_DATA"; exit 1; }
 fi
 
 # prepare config
-mkdir -p /data/config/clickhouse-server/config.d
-[ -f /data/config/clickhouse-server/config.d/hass.xml ] || echo '<?xml version="1.0" encoding="UTF-8"?><clickhouse></clickhouse>' > /data/config/clickhouse-server/config.d/hass.xml
-xmlstarlet ed -L \
-    -s "/clickhouse" -t elem -n "logger" -v "" \
-    -s "/clickhouse/logger" -t elem -n "level" -v "information" \
-    -s "/clickhouse/logger" -t elem -n "log" \
-    -s "/clickhouse/logger" -t elem -n "errorlog" \
-    -s "/clickhouse/logger" -t elem -n "console" -v "1" \
-    -s "/clickhouse" -t elem -n "path" -v "/data/clickhouse/data" \
-    -s "/clickhouse" -t elem -n "tmp_path" -v "/data/clickhouse/data/tmp/" \
-    -s "/clickhouse" -t elem -n "custom_cached_disks_base_directory" -v "/data/clickhouse/data/caches/" \
-    -s "/clickhouse" -t elem -n "user_files_path" -v "/data/clickhouse/data/user_files/" \
-    -s "/clickhouse" -t elem -n "format_schema_path" -v "/data/clickhouse/data/format_schemas/" \
-    -s "/clickhouse" -t elem -n "user_directories" -v "" \
-    -s "/clickhouse/user_directories" -t elem -n "local_directory" -v "" \
-    -s "/clickhouse/user_directories/local_directory" -t elem -n "path" -v "/data/clickhouse/data/access/" \
-    -s "/clickhouse" -t elem -n "listen_host" -v "0.0.0.0" \
-    -s "/clickhouse" -t elem -n "http_port" -v "8124" \
-    -s "/clickhouse" -t elem -n "tcp_port" -v "9000" \
-    -s "/clickhouse" -t elem -n "mysql_port" -v "9004" \
-    -s "/clickhouse" -t elem -n "postgresql_port" -v "9005" \
-    /data/config/clickhouse-server/config.d/hass.xml
+if [ ! -d "$DATA_CONFIG/clickhouse-server/config.d" ]; then
+    mkdir -p "$DATA_CONFIG/clickhouse-server/config.d" || { bashio::log.error "Failed to create directory $DATA_CONFIG/clickhouse-server/config.d"; exit 1; }
+fi
 
-chown clickhouse:clickhouse /data/clickhouse/data/
-chmod ugo+Xrw -R /data/clickhouse/data/ /data/config/clickhouse-server/ /data/config/clickhouse-client/
+cat > "$HASS_CONFIG" <<EOF || { bashio::log.error "Failed to create $HASS_CONFIG"; exit 1; }
+<?xml version="1.0" encoding="UTF-8"?>
+<clickhouse>
+    <logger>
+        <level>$(bashio::config 'logger.level')</level>
+        <log />
+        <errorlog />
+        <console>1</console>
+    </logger>
+    <path>$CLICKHOUSE_DATA</path>
+    <tmp_path>$CLICKHOUSE_DATA/tmp/</tmp_path>
+    <custom_cached_disks_base_directory>$CLICKHOUSE_DATA/caches/</custom_cached_disks_base_directory>
+    <user_files_path>$CLICKHOUSE_DATA/user_files/</user_files_path>
+    <format_schema_path>$CLICKHOUSE_DATA/format_schemas/</format_schema_path>
+    <user_directories>
+        <local_directory>
+            <path>$CLICKHOUSE_DATA/access/</path>
+        </local_directory>
+    </user_directories>
+    <listen_host>0.0.0.0</listen_host>
+    <http_port>8124</http_port>
+    <tcp_port>9000</tcp_port>
+    <mysql_port>9004</mysql_port>
+    <postgresql_port>9005</postgresql_port>
+</clickhouse>
+EOF
 
-bashio::log.info "Init script done!"
+# Set ownership and permissions
+chown -R clickhouse:clickhouse "$CLICKHOUSE_DATA"  || { bashio::log.error "Failed to set ownership for $CLICKHOUSE_DATA"; exit 1; }
+chmod ugo+Xrw -R $CLICKHOUSE_DATA $DATA_CONFIG || { bashio::log.error "Failed to set permissions"; exit 1; }
+
+bashio::log.info "Init script completed successfully!"
 

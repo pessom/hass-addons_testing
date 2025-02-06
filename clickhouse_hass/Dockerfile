@@ -42,7 +42,7 @@ RUN cd /tmp \
         fi \
     ; done \
     && rm /tmp/*.tgz /install -r \
-    && apk add --no-cache tzdata xmlstarlet \
+    && apk add --no-cache tzdata \
     && cp /usr/share/zoneinfo/UTC /etc/localtime \
     && echo "UTC" > /etc/timezone \
     && mv /etc/clickhouse-server /opt/etc/ && mv /etc/clickhouse-client /opt/etc/ \

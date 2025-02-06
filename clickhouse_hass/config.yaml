@@ -14,16 +14,13 @@ init: false
 map:
   - ssl
   - share
-#options:
-#  http_port: 8124
-#  tcp_port: 9000
-#  mysq_port: 9004
-#  postgresql_port: 9005
-#schema:
-#  http_port: port
-#  tcp_port: port
-#  mysq_port: port
-#  postgresql_port: port
+options:
+  logger:
+    level: information
+schema:
+  logger:
+    level: list(none|fatal|critical|error|warning|notice|information|debug|trace|test)?
+
 ports:
   8124/tcp: 8124
   9000/tcp: 9000
