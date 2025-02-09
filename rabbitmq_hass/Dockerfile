@@ -13,16 +13,13 @@ ENV LANG=C.UTF-8 \
     RABBITMQ_MNESIA_BASE="/data/rabbitmq/mnesia" \
     RABBITMQ_BASE="/data/rabbitmq/"
 
-RUN apk add --no-cache rabbitmq-server=${RABBITMQ_VERSION} procps tzdata && \
+RUN apk add --no-cache rabbitmq-server=${RABBITMQ_VERSION} procps tzdata
 
-RUN mkdir -p "${RABBITMQ_HOME}" && \
-    ln -sf "${RABBITMQ_HOME}" /var/lib/rabbitmq && \
-    addgroup -g 101 -S rabbitmq && \
-	adduser -u 100 -S -h "${RABBITMQ_HOME}" -G rabbitmq rabbitmq && \
-	mkdir -p "${RABBITMQ_DATA_DIR}" "${RABBITMQ_CONFIG}" "${RABBITMQ_CONFIG}/conf.d" /tmp/rabbitmq-ssl /var/log/rabbitmq && \
+RUN mkdir -p "${RABBITMQ_DATA_DIR}" "${RABBITMQ_CONFIG}" "${RABBITMQ_CONFIG}/conf.d" /tmp/rabbitmq-ssl /var/log/rabbitmq && \
 	chown -fR rabbitmq:rabbitmq "${RABBITMQ_DATA_DIR}" "${RABBITMQ_CONFIG}" /tmp/rabbitmq-ssl /var/log/rabbitmq && \
-	chmod 1777 "${RABBITMQ_DATA_DIR}" "${RABBITMQ_CONFIG}" "${RABBITMQ_CONFIG}/conf.d" /tmp/rabbitmq-ssl /var/log/rabbitmq \
-
+	chmod 1777 "${RABBITMQ_DATA_DIR}" "${RABBITMQ_CONFIG}" "${RABBITMQ_CONFIG}/conf.d" /tmp/rabbitmq-ssl /var/log/rabbitmq && \
+    rm -rf /var/lib/rabbitmq && \
+    ln -sf "${RABBITMQ_HOME}" /var/lib/rabbitmq
 
 EXPOSE 4369 5671 5672 15691 15692 25672
 
