@@ -9,25 +9,33 @@ set -e
 bashio::log.info "Running init script..."
 
 RABBITMQ_CONFIG="/data/config/"
-RABBITMQ_HOME="/data/home/"
-RABBITMQ_CONFIG_EXTEND="/data/config/conf.d/"
+RABBITMQ_CONFIG_EXTEND="${RABBITMQ_CONFIG}/conf.d/"
 RABBITMQ_DATA_DIR="/data/rabbitmq/"
 RABBITMQ_LOG_DIR="/var/log/rabbitmq/"
+plugins=$(bashio::config 'plugins' | jq -r 'to_entries | .[] | select(.value==true) | .key' | paste -sd "," -)
 
 if [ ! -d "$RABBITMQ_CONFIG" ]; then
     bashio::log.info "Creating directory for rabbitmq configs..."
     mkdir -p "$RABBITMQ_CONFIG" || { bashio::log.error "Failed to create directory $RABBITMQ_CONFIG"; exit 1; }
-fi
 
-if [ ! -d "$RABBITMQ_CONFIG_EXTEND" ]; then
-    bashio::log.info "Creating directory for rabbitmq configs extend..."
-    mkdir -p "$RABBITMQ_CONFIG_EXTEND" || { bashio::log.error "Failed to create directory $RABBITMQ_CONFIG_EXTEND"; exit 1; }
-    cp /opt/rabbitmq/conf.d/* "${RABBITMQ_CONFIG_EXTEND}" || { bashio::log.error "Failed to copy rabbitmq extend configs"; exit 1; }
-fi
+    # Copy rabbitmq.conf if it doesn't exist
+    if [ ! -f "${RABBITMQ_CONFIG}/rabbitmq.conf" ]; then
+        bashio::log.info "Copying rabbitmq.conf..."
+        cp /opt/rabbitmq/rabbitmq.conf "${RABBITMQ_CONFIG}/rabbitmq.conf" || { bashio::log.error "Failed to copy rabbitmq.conf"; exit 1; }
+    fi
 
-if [ ! -d "$RABBITMQ_HOME" ]; then
-    bashio::log.info "Creating directory for rabbitmq home..."
-    mkdir -p "$RABBITMQ_HOME" || { bashio::log.error "Failed to create directory $RABBITMQ_HOME"; exit 1; }
+    # Copy empty definitions file if it doesn't exist
+    if [ ! -f "${RABBITMQ_CONFIG}/definitions.json" ]; then
+        bashio::log.info "Copying definitions.json..."
+        cp /opt/rabbitmq/definitions.json "${RABBITMQ_CONFIG}/definitions.json" || { bashio::log.error "Failed to copy definitions.json"; exit 1; }
+    fi
+
+    if [ ! -d "$RABBITMQ_CONFIG_EXTEND" ]; then
+        bashio::log.info "Creating directory for rabbitmq configs extend..."
+        mkdir -p "$RABBITMQ_CONFIG_EXTEND" || { bashio::log.error "Failed to create directory $RABBITMQ_CONFIG_EXTEND"; exit 1; }
+        cp /opt/rabbitmq/conf.d/* "${RABBITMQ_CONFIG_EXTEND}" || { bashio::log.error "Failed to copy rabbitmq extend configs"; exit 1; }
+    fi
+
 fi
 
 if [ ! -d "$RABBITMQ_DATA_DIR" ]; then
@@ -35,20 +43,7 @@ if [ ! -d "$RABBITMQ_DATA_DIR" ]; then
     mkdir -p "$RABBITMQ_DATA_DIR" || { bashio::log.error "Failed to create directory $RABBITMQ_DATA_DIR"; exit 1; }
 fi
 
-# Copy rabbitmq.conf if it doesn't exist
-if [ ! -f "${RABBITMQ_CONFIG}/rabbitmq.conf" ]; then
-    bashio::log.info "Copying rabbitmq.conf..."
-    cp /opt/rabbitmq/rabbitmq.conf "${RABBITMQ_CONFIG}/rabbitmq.conf" || { bashio::log.error "Failed to copy rabbitmq.conf"; exit 1; }
-fi
-
-# Copy empty definitions file if it doesn't exist
-if [ ! -f "${RABBITMQ_CONFIG}/definitions.json" ]; then
-    bashio::log.info "Copying definitions.json..."
-    cp /opt/rabbitmq/definitions.json "${RABBITMQ_CONFIG}/definitions.json" || { bashio::log.error "Failed to copy definitions.json"; exit 1; }
-fi
-
 # Enable plugins from the plugins variable
-plugins=$(bashio::config 'plugins' | jq -r 'to_entries | .[] | select(.value==true) | .key' | paste -sd "," -)
 bashio::log.info "Enabling plugins: ${plugins}"
 echo "[${plugins}]." > "${RABBITMQ_CONFIG}/enabled_plugins"
 
@@ -56,13 +51,5 @@ echo "[${plugins}]." > "${RABBITMQ_CONFIG}/enabled_plugins"
 chown -R rabbitmq:rabbitmq "${RABBITMQ_CONFIG}"
 chown -R rabbitmq:rabbitmq "${RABBITMQ_DATA_DIR}"
 chown -R rabbitmq:rabbitmq "${RABBITMQ_LOG_DIR}"
-chown -R rabbitmq:rabbitmq "${RABBITMQ_HOME}"
-
-# Set environment variables
-export RABBITMQ_CONFIG_FILE="${RABBITMQ_CONFIG}/rabbitmq.conf"
-export RABBITMQ_MNESIA_BASE="${RABBITMQ_DATA_DIR}"
-export RABBITMQ_HOME="${RABBITMQ_HOME}"
-export RABBITMQ_MNESIA_BASE="${RABBITMQ_HOME}/mnesia"
-export RABBITMQ_BASE="${RABBITMQ_HOME}"
 
 bashio::log.info "Init script completed successfully!"
