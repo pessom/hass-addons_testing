@@ -15,11 +15,11 @@ ENV LANG=C.UTF-8 \
 
 RUN apk add --no-cache rabbitmq-server=${RABBITMQ_VERSION} procps tzdata
 
-RUN mkdir -p "${RABBITMQ_DATA_DIR}" "${RABBITMQ_CONFIG}" "${RABBITMQ_CONFIG}/conf.d" /tmp/rabbitmq-ssl /var/log/rabbitmq && \
+RUN rm -rf /var/lib/rabbitmq && \
+    ln -sf "${RABBITMQ_HOME}" /var/lib/rabbitmq && \
+    mkdir -p "${RABBITMQ_DATA_DIR}" "${RABBITMQ_CONFIG}" "${RABBITMQ_CONFIG}/conf.d" /tmp/rabbitmq-ssl /var/log/rabbitmq && \
 	chown -fR rabbitmq:rabbitmq "${RABBITMQ_DATA_DIR}" "${RABBITMQ_CONFIG}" /tmp/rabbitmq-ssl /var/log/rabbitmq && \
-	chmod 1777 "${RABBITMQ_DATA_DIR}" "${RABBITMQ_CONFIG}" "${RABBITMQ_CONFIG}/conf.d" /tmp/rabbitmq-ssl /var/log/rabbitmq && \
-    rm -rf /var/lib/rabbitmq && \
-    ln -sf "${RABBITMQ_HOME}" /var/lib/rabbitmq
+	chmod 1777 "${RABBITMQ_DATA_DIR}" "${RABBITMQ_CONFIG}" "${RABBITMQ_CONFIG}/conf.d" /tmp/rabbitmq-ssl /var/log/rabbitmq
 
 EXPOSE 4369 5671 5672 15691 15692 25672
 
