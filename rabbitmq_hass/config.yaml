@@ -13,20 +13,20 @@ map:
   - share
 options:
   log_level: info
-  plugins: []
-    #    - rabbitmq_amqp1_0
-    #    - rabbitmq_auth_backend_cache
-    #    - rabbitmq_auth_backend_http
-    #    - rabbitmq_auth_backend_ldap
-    #    - rabbitmq_auth_backend_oauth2
-    #    - rabbitmq_auth_mechanism_ssl
-    #    - rabbitmq_consistent_hash_exchange
-    #    - rabbitmq_event_exchange
-    #    - rabbitmq_federation
-    #    - rabbitmq_federation_management
-    #    - rabbitmq_jms_topic_exchange
-#    - rabbitmq_management: bool
-#    - rabbitmq_management_agent: bool
+  plugins:
+    - rabbitmq_management
+    - rabbitmq_management_agent
+#    - rabbitmq_amqp1_0
+#    - rabbitmq_auth_backend_cache
+#    - rabbitmq_auth_backend_http
+#    - rabbitmq_auth_backend_ldap
+#    - rabbitmq_auth_backend_oauth2
+#    - rabbitmq_auth_mechanism_ssl
+#    - rabbitmq_consistent_hash_exchange
+#    - rabbitmq_event_exchange
+#    - rabbitmq_federation
+#    - rabbitmq_federation_management
+#    - rabbitmq_jms_topic_exchange
 #    - rabbitmq_mqtt
 #    - rabbitmq_peer_discovery_aws
 #    - rabbitmq_peer_discovery_common
