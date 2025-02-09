@@ -55,6 +55,7 @@ echo "[$(bashio::config 'plugins')]." > "${RABBITMQ_CONFIG}/enabled_plugins"
 chown -R rabbitmq:rabbitmq "${RABBITMQ_CONFIG}"
 chown -R rabbitmq:rabbitmq "${RABBITMQ_DATA_DIR}"
 chown -R rabbitmq:rabbitmq "${RABBITMQ_LOG_DIR}"
+chown -R rabbitmq:rabbitmq "${RABBITMQ_HOME}"
 
 # Set environment variables
 export RABBITMQ_CONFIG_FILE="${RABBITMQ_CONFIG}/rabbitmq.conf"
