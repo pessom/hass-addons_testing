@@ -48,9 +48,9 @@ if [ ! -f "${RABBITMQ_CONFIG}/definitions.json" ]; then
 fi
 
 # Enable plugins from the plugins variable
-bashio::log.info "Enabling plugins: $(bashio::config 'plugins')"
 plugins=$(bashio::config 'plugins' | jq -r 'to_entries | .[] | select(.value==true) | .key' | paste -sd "," -)
-echo "[${plugins}]." > "${RABBITMQ_HOME}/enabled_plugins"
+bashio::log.info "Enabling plugins: ${plugins}"
+echo "[${plugins}]." > "${RABBITMQ_CONFIG}/enabled_plugins"
 
 # Set correct permissions
 chown -R rabbitmq:rabbitmq "${RABBITMQ_CONFIG}"
