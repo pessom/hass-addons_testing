@@ -13,43 +13,43 @@ map:
   - share
 options:
   log_level: info
-  plugins: []
-#    - rabbitmq_management
-#    - rabbitmq_management_agent
-#    - rabbitmq_amqp1_0
-#    - rabbitmq_auth_backend_cache
-#    - rabbitmq_auth_backend_http
-#    - rabbitmq_auth_backend_ldap
-#    - rabbitmq_auth_backend_oauth2
-#    - rabbitmq_auth_mechanism_ssl
-#    - rabbitmq_consistent_hash_exchange
-#    - rabbitmq_event_exchange
-#    - rabbitmq_federation
-#    - rabbitmq_federation_management
-#    - rabbitmq_jms_topic_exchange
-#    - rabbitmq_mqtt
-#    - rabbitmq_peer_discovery_aws
-#    - rabbitmq_peer_discovery_common
-#    - rabbitmq_peer_discovery_consul
-#    - rabbitmq_peer_discovery_etcd
-#    - rabbitmq_peer_discovery_k8s
-#    - rabbitmq_prometheus
-#    - rabbitmq_random_exchange
-#    - rabbitmq_recent_history_exchange
-#    - rabbitmq_sharding
-#    - rabbitmq_shovel
-#    - rabbitmq_shovel_management
-#    - rabbitmq_stomp
-#    - rabbitmq_stream
-#    - rabbitmq_stream_management
-#    - rabbitmq_top
-#    - rabbitmq_tracing
-#    - rabbitmq_trust_store
-#    - rabbitmq_web_dispatch
-#    - rabbitmq_web_mqtt
-#    - rabbitmq_web_mqtt_examples
-#    - rabbitmq_web_stomp
-#    - rabbitmq_web_stomp_examples
+  plugins:
+    - rabbitmq_management: True
+    - rabbitmq_management_agent: True
+    - rabbitmq_amqp1_0: False
+    - rabbitmq_auth_backend_cache: False
+    - rabbitmq_auth_backend_http: False
+    - rabbitmq_auth_backend_ldap: False
+    - rabbitmq_auth_backend_oauth2: False
+    - rabbitmq_auth_mechanism_ssl: False
+    - rabbitmq_consistent_hash_exchange: False
+    - rabbitmq_event_exchange: False
+    - rabbitmq_federation: False
+    - rabbitmq_federation_management: False
+    - rabbitmq_jms_topic_exchange: False
+    - rabbitmq_mqtt: False
+    - rabbitmq_peer_discovery_aws: False
+    - rabbitmq_peer_discovery_common: False
+    - rabbitmq_peer_discovery_consul: False
+    - rabbitmq_peer_discovery_etcd: False
+    - rabbitmq_peer_discovery_k8s: False
+    - rabbitmq_prometheus: False
+    - rabbitmq_random_exchange: False
+    - rabbitmq_recent_history_exchange: False
+    - rabbitmq_sharding: False
+    - rabbitmq_shovel: False
+    - rabbitmq_shovel_management: False
+    - rabbitmq_stomp: False
+    - rabbitmq_stream: False
+    - rabbitmq_stream_management: False
+    - rabbitmq_top: False
+    - rabbitmq_tracing: False
+    - rabbitmq_trust_store: False
+    - rabbitmq_web_dispatch: False
+    - rabbitmq_web_mqtt: False
+    - rabbitmq_web_mqtt_examples: False
+    - rabbitmq_web_stomp: False
+    - rabbitmq_web_stomp_examples: False
 schema:
   log_level: list(info|error)?
   plugins:
