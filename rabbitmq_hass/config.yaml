@@ -14,9 +14,9 @@ map:
 options:
   log_level: info
   plugins:
-    - rabbitmq_management: True
-      #    - rabbitmq_management_agent: True
-    - rabbitmq_amqp1_0: False
+    rabbitmq_management: True
+    #    - rabbitmq_management_agent: True
+    rabbitmq_amqp1_0: False
 #    - rabbitmq_auth_backend_cache: False
 #    - rabbitmq_auth_backend_http: False
 #    - rabbitmq_auth_backend_ldap: False
@@ -53,7 +53,7 @@ options:
 schema:
   log_level: list(info|error)?
   plugins:
-    - rabbitmq_amqp1_0: bool
+    rabbitmq_amqp1_0: bool
     #    - rabbitmq_auth_backend_cache: bool
     #    - rabbitmq_auth_backend_http: bool
     #    - rabbitmq_auth_backend_ldap: bool
@@ -64,7 +64,7 @@ schema:
     #    - rabbitmq_federation: bool
     #    - rabbitmq_federation_management: bool
     #    - rabbitmq_jms_topic_exchange: bool
-    - rabbitmq_management: bool
+    rabbitmq_management: bool
 #    - rabbitmq_management_agent: bool
 #    - rabbitmq_mqtt: bool
 #    - rabbitmq_peer_discovery_aws: bool
