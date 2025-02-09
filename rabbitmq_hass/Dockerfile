@@ -18,6 +18,6 @@ RUN rm -rf /var/lib/rabbitmq /etc/rabbitmq && \
 	chown -fR rabbitmq:rabbitmq "${RABBITMQ_CONFIG}" /tmp/rabbitmq-ssl /var/log/rabbitmq && \
 	chmod 1777 "${RABBITMQ_CONFIG}" "${RABBITMQ_CONFIG}/conf.d" /tmp/rabbitmq-ssl /var/log/rabbitmq
 
-EXPOSE 4369 5671 5672 15691 15692 25672
+EXPOSE 1883 5672 15672 15692 25672
 
 COPY rootfs /

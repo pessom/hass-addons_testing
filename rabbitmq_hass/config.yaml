@@ -91,16 +91,22 @@ schema:
     rabbitmq_web_stomp_examples: bool
 
 ports:
-  4369/tcp: 4369
-  5671/tcp: 5671
+  1883/tcp: 1883
+  5552/tcp: 5552
   5672/tcp: 5672
-  15691/tcp: 15691
+  15672/tcp: 15672
+  15674/tcp: 15674
+  15675/tcp: 15675
   15692/tcp: 15692
   25672/tcp: 25672
+  61613/tcp: 61613
 ports_description:
-  4369/tcp: "epmd - a peer discovery service used by RabbitMQ nodes and CLI tools"
-  5671/tcp: "AMQP with TLS"
-  5672/tcp: "AMQP without TLS"
-  15691/tcp: "Prometheus metrics with TLS"
+  1883/tcp: "MQTT plugin without TLS"
+  5552/tcp: "Stream plugin without TLS"
+  5672/tcp: "RabbitMQ without TLS"
+  15672/tcp: "Management plugin without TLS"
+  15674/tcp: "Web STOMP plugin without TLS"
+  15675/tcp: "Web MQTT plugin without TLS"
   15692/tcp: "Prometheus metrics without TLS"
-  25672/tcp: "Web interface for management"
+  25672/tcp: "epmd - a peer discovery service used by RabbitMQ nodes and CLI tools"
+  61613/tcp: "STOMP plugin without TLS"
