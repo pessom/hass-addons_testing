@@ -13,9 +13,9 @@ map:
   - share
 options:
   log_level: info
-  plugins:
-    - rabbitmq_management
-    - rabbitmq_management_agent
+  plugins: []
+#    - rabbitmq_management
+#    - rabbitmq_management_agent
 #    - rabbitmq_amqp1_0
 #    - rabbitmq_auth_backend_cache
 #    - rabbitmq_auth_backend_http
