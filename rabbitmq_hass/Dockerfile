@@ -10,7 +10,6 @@ ENV LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
     RABBITMQ_CONFIG_FILE="/data/config" \
     RABBITMQ_MNESIA_BASE="/data/rabbitmq"
-#    RABBITMQ_LOG_BASE="/var/log/rabbitmq"
 
 RUN apk add --no-cache rabbitmq-server=${RABBITMQ_VERSION} procps tzdata
 RUN addgroup -g 101 -S rabbitmq; \

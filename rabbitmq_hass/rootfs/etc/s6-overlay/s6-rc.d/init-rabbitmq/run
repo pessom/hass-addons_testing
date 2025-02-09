@@ -53,6 +53,5 @@ chown -R rabbitmq:rabbitmq "${RABBITMQ_LOG_DIR}"
 # Set environment variables
 export RABBITMQ_CONFIG_FILE="${RABBITMQ_HOME}"
 export RABBITMQ_MNESIA_BASE="${RABBITMQ_DATA_DIR}"
-# export RABBITMQ_LOG_BASE="${RABBITMQ_LOG_DIR}"
 
 bashio::log.info "Init script completed successfully!"
