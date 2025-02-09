@@ -61,5 +61,6 @@ export RABBITMQ_CONFIG_FILE="${RABBITMQ_CONFIG}/rabbitmq.conf"
 export RABBITMQ_MNESIA_BASE="${RABBITMQ_DATA_DIR}"
 export RABBITMQ_HOME="${RABBITMQ_HOME}"
 export RABBITMQ_MNESIA_BASE="${RABBITMQ_HOME}/mnesia"
+export RABBITMQ_BASE="${RABBITMQ_HOME}"
 
 bashio::log.info "Init script completed successfully!"
