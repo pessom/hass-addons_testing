@@ -8,6 +8,15 @@ set -e
 
 bashio::log.info "Running users-rabbitmq script..."
 
+bashio::log.info "Waiting for RabbitMQ to start..."
+sleep 15
+
+# Check if RabbitMQ is enabled
+if ! bashio::services.available "rabbitmq"; then
+    bashio::log.info "RabbitMQ is not enabled, skipping users-rabbitmq script..."
+    exit 0
+fi
+
 # read users from configuration.yaml
 declare -a users
 users=$(bashio::config 'users')
