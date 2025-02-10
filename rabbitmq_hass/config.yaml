@@ -101,7 +101,10 @@ schema:
     rabbitmq_web_mqtt_examples: bool
     rabbitmq_web_stomp: bool
     rabbitmq_web_stomp_examples: bool
-  users: [ ]
+  users:
+    - username: "str"
+      password: "password"
+
 ports:
   1883/tcp: 1883
   5552/tcp: 5552
