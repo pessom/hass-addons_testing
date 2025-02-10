@@ -47,37 +47,6 @@ fi
 bashio::log.info "Enabling plugins: ${plugins}"
 echo "[${plugins}]." > "${RABBITMQ_CONFIG}/enabled_plugins"
 
-# read users from configuration.yaml
-declare -a users
-users=$(bashio::config 'users')
-
-# Get current users from RabbitMQ
-CURRENT_USERS=$(rabbitmqctl list_users --formatter json | jq -r .[].user | tr '\n' ' ')
-
-# Loop over users and create or update them
-for row in $(bashio::jq "${users}" '. | @base64'); do
-    _jq() {
-        echo "${row}" | base64 -d | jq -r "${1}"
-    }
-
-    USERNAME=$(_jq '.username')
-    PASSWORD=$(_jq '.password')
-    TAGS=$(_jq '.tags // "none"')
-
-    # check if user already exists
-    if [[ " ${CURRENT_USERS} " =~ " ${USERNAME} " ]]; then
-        bashio::log.info "Update password for user: ${USERNAME}..."
-        rabbitmqctl change_password "${USERNAME}" "${PASSWORD}"
-    else
-        bashio::log.info "Create new user: ${USERNAME}..."
-        rabbitmqctl add_user "${USERNAME}" "${PASSWORD}"
-    fi
-
-    # Set roles
-    rabbitmqctl set_user_tags "${USERNAME}" "${TAGS}"
-    bashio::log.info "Update user: ${USERNAME} , set tags: ${TAGS}"
-done
-
 # Set correct permissions
 chown -R rabbitmq:rabbitmq "${RABBITMQ_CONFIG}"
 chown -R rabbitmq:rabbitmq "${RABBITMQ_DATA_DIR}"
