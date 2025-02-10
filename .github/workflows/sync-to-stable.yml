@@ -10,6 +10,7 @@ on:
         options:
           - postfix_hass
           - clickhouse_hass
+          - rabbitmq_hass
 jobs:
   sync:
     runs-on: ubuntu-latest
@@ -42,6 +43,11 @@ jobs:
         run: |
           sed -i 's/clickhouse_hass_testing/clickhouse_hass_testing/' stable-repo/clickhouse_hass/config.yaml
           sed -i 's/Clickhouse_testing/Clickhouse/' stable-repo/clickhouse_hass/config.yaml
+
+      - name: Update to stable configuration for RabbitMQ
+        if: github.event.inputs.SYNC_DIR == 'rabbitmq_hass'
+        run: |
+          sed -i 's/_testing//' stable-repo/rabbitmq_hass/config.yaml
 
       - name: Commit and push to stable repo
         run: |
