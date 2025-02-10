@@ -10,7 +10,6 @@ arch:
 init: false
 map:
   - ssl
-  - share
 options:
   log_level: info
   plugins:
@@ -89,7 +88,19 @@ schema:
     rabbitmq_web_mqtt_examples: bool
     rabbitmq_web_stomp: bool
     rabbitmq_web_stomp_examples: bool
-
+  users:
+    - username: admin
+      password: admin_password
+      tags: administrator
+    - username: manage
+      password: manage_password
+      tags: management
+    - username: monitor
+      password: monitor_password
+      tags: monitoring
+    - username: worker
+      password: worker_password
+      tags: none
 ports:
   1883/tcp: 1883
   5552/tcp: 5552
