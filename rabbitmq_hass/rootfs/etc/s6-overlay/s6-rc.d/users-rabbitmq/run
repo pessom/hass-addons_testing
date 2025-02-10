@@ -6,10 +6,11 @@
 
 set -e
 
+sleep 15s;
+
 bashio::log.info "Running users-rabbitmq script..."
 
 bashio::log.info "Waiting for RabbitMQ to start..."
-sleep 15
 
 # Check if RabbitMQ is enabled
 if ! bashio::services.available "rabbitmq"; then
