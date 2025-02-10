@@ -104,6 +104,7 @@ schema:
   users:
     - username: "str"
       password: "password"
+      tags: list(management|policymaker|monitoring|administrator|none)?
 
 ports:
   1883/tcp: 1883
