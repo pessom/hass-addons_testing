@@ -43,4 +43,3 @@ schema:
       readonly: bool?
       nfs_options:
         - str
-        -
