@@ -1,6 +1,6 @@
-name: "NFS Disk Share"
+name: "NFS Disk Share Testing"
 version: "0.0.1"
-slug: "nfs_disk_share"
+slug: "nfs_disk_share_testing"
 description: "Mount disks and share them via NFS"
 startup: system
 boot: auto
