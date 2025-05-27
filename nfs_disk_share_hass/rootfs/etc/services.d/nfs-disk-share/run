@@ -1,0 +1,51 @@
+#!/usr/bin/with-contenv bashio
+
+bashio::log.info "Reading configuration..."
+
+MOUNTS=$(bashio::config 'mounts' | jq -r 'to_entries[] | @base64')
+
+for entry in $MOUNTS; do
+    _jq() {
+        echo "${entry}" | base64 --decode | jq -r "$1"
+    }
+
+    NAME=$(_jq '.key')
+    DEV=$(_jq '.value.mount.dev')
+    UUID=$(_jq '.value.mount.uuid')
+    MOUNT_POINT=$(_jq '.value.mount.point')
+
+    bashio::log.info "Processing share '$NAME'..."
+
+    mkdir -p "$MOUNT_POINT"
+
+    if [ -n "$UUID" ]; then
+        DEVICE_PATH=$(blkid -U "$UUID")
+        if [ -z "$DEVICE_PATH" ]; then
+            bashio::log.error "UUID $UUID not found"
+            continue
+        fi
+    elif [ -n "$DEV" ]; then
+        DEVICE_PATH="$DEV"
+    else
+        bashio::log.error "Neither 'dev' nor 'uuid' specified for '$NAME'"
+        continue
+    fi
+
+    bashio::log.info "Mounting $DEVICE_PATH to $MOUNT_POINT"
+    if ! mountpoint -q "$MOUNT_POINT"; then
+        mount "$DEVICE_PATH" "$MOUNT_POINT"
+    else
+        bashio::log.info "$MOUNT_POINT already mounted"
+    fi
+
+    # Формируем строку экспорта
+    bashio::log.info "Generating NFS export line for $MOUNT_POINT..."
+    OPTIONS=$(echo "${entry}" | base64 --decode | jq -r '.value.nfs_options | join(" ")')
+    echo "$MOUNT_POINT $OPTIONS" >> /etc/exports
+done
+
+bashio::log.info "Starting NFS server..."
+rpcbind
+exportfs -a
+rpc.nfsd
+rpc.mountd -F

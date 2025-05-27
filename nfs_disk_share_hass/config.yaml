@@ -1,0 +1,66 @@
+name: "NFS Disk Share"
+version: "0.0.1"
+slug: "nfs_disk_share"
+description: "Mount disks and share them via NFS"
+startup: system
+boot: auto
+init: false
+privileged:
+  - SYS_ADMIN
+  - DAC_READ_SEARCH
+  - SYS_MODULE
+host_network: true
+devices:
+  - /dev/sd
+full_access: false
+options:
+  mounts:
+    media_share:
+      mount:
+        enabled: false
+        label: "frigate"
+        point: "/mnt/media-share"
+        fstype: ext4
+      nfs_options:
+        - "192.168.1.100(rw,sync,no_subtree_check)"
+        - "192.168.1.101(ro,sync,no_subtree_check)"
+        - "192.168.2.0/24(ro,sync,no_subtree_check)"
+
+schema:
+  mounts:
+    type: map
+    keys:
+      type: string
+    values:
+      type: map
+      schema:
+        enabled:
+          type: boolean
+          default: true
+        mount:
+          type: map
+          required: true
+          schema:
+            dev:
+              type: string
+              required: false
+            uuid:
+              type: string
+              required: false
+            label:
+              type: string
+              required: false
+            point:
+              type: string
+              required: false  # используется, если нужно вручную задать путь
+            fstype:
+              type: string
+              required: false
+            readonly:
+              type: boolean
+              default: false
+        nfs_options:
+          type: list
+          required: true
+          items:
+            type: string
