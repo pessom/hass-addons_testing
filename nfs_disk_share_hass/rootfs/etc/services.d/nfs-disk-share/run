@@ -9,7 +9,7 @@ bashio::log.info "Reading configuration..."
 MOUNTS_JSON=$(bashio::config 'mounts')
 
 # Обрабатываем каждый элемент
-echo "$MOUNTS_JSON" | jq -c '.[]' | while read -r mount; do
+echo "$MOUNTS_JSON" | jq -c '.' | while read -r mount; do
     NAME=$(echo "$mount" | jq -r '.name')
     ENABLED=$(echo "$mount" | jq -r '.enabled // true')
 
