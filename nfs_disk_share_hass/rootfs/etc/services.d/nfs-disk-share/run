@@ -2,50 +2,121 @@
 
 bashio::log.info "Reading configuration..."
 
-MOUNTS=$(bashio::config 'mounts' | jq -r 'to_entries[] | @base64')
+# Очищаем файл exports перед началом
+> /etc/exports
 
-for entry in $MOUNTS; do
-    _jq() {
-        echo "${entry}" | base64 --decode | jq -r "$1"
-    }
+# Получаем весь массив mounts как JSON
+MOUNTS_JSON=$(bashio::config 'mounts')
 
-    NAME=$(_jq '.key')
-    DEV=$(_jq '.value.mount.dev')
-    UUID=$(_jq '.value.mount.uuid')
-    MOUNT_POINT=$(_jq '.value.mount.point')
+# Обрабатываем каждый элемент
+echo "$MOUNTS_JSON" | jq -c '.[]' | while read -r mount; do
+    NAME=$(echo "$mount" | jq -r '.name')
+    ENABLED=$(echo "$mount" | jq -r '.enabled // true')
+
+    if [ "$ENABLED" = "false" ]; then
+        bashio::log.info "Skipping disabled mount '$NAME'"
+        continue
+    fi
+
+    # Читаем параметры монтирования
+    DEV=$(echo "$mount" | jq -r '.dev // empty')
+    UUID=$(echo "$mount" | jq -r '.uuid // empty')
+    LABEL=$(echo "$mount" | jq -r '.label // empty')
+    MOUNT_POINT=$(echo "$mount" | jq -r '.point')
+    FSTYPE=$(echo "$mount" | jq -r '.fstype // "auto"')
+    READONLY=$(echo "$mount" | jq -r '.readonly // false')
 
     bashio::log.info "Processing share '$NAME'..."
 
+    # Создаем точку монтирования
     mkdir -p "$MOUNT_POINT"
 
+    # Определяем устройство для монтирования
     if [ -n "$UUID" ]; then
+        bashio::log.info "Looking for device with UUID: $UUID"
         DEVICE_PATH=$(blkid -U "$UUID")
         if [ -z "$DEVICE_PATH" ]; then
             bashio::log.error "UUID $UUID not found"
             continue
         fi
+    elif [ -n "$LABEL" ]; then
+        bashio::log.info "Looking for device with label: $LABEL"
+        DEVICE_PATH=$(blkid -L "$LABEL")
+        if [ -z "$DEVICE_PATH" ]; then
+            bashio::log.error "Label $LABEL not found"
+            continue
+        fi
     elif [ -n "$DEV" ]; then
         DEVICE_PATH="$DEV"
+        if [ ! -b "$DEVICE_PATH" ]; then
+            bashio::log.error "Device $DEVICE_PATH does not exist"
+            continue
+        fi
     else
-        bashio::log.error "Neither 'dev' nor 'uuid' specified for '$NAME'"
+        bashio::log.error "No device identifier (dev/uuid/label) specified for '$NAME'"
         continue
     fi
 
-    bashio::log.info "Mounting $DEVICE_PATH to $MOUNT_POINT"
+    # Формируем опции монтирования
+    MOUNT_OPTIONS=""
+    if [ "$FSTYPE" != "auto" ]; then
+        MOUNT_OPTIONS="-t $FSTYPE"
+    fi
+    if [ "$READONLY" = "true" ]; then
+        MOUNT_OPTIONS="$MOUNT_OPTIONS -o ro"
+    fi
+
+    # Монтируем устройство
+    bashio::log.info "Mounting $DEVICE_PATH to $MOUNT_POINT with options: $MOUNT_OPTIONS"
     if ! mountpoint -q "$MOUNT_POINT"; then
-        mount "$DEVICE_PATH" "$MOUNT_POINT"
+        if mount $MOUNT_OPTIONS "$DEVICE_PATH" "$MOUNT_POINT"; then
+            bashio::log.info "Successfully mounted $DEVICE_PATH to $MOUNT_POINT"
+        else
+            bashio::log.error "Failed to mount $DEVICE_PATH to $MOUNT_POINT"
+            continue
+        fi
     else
         bashio::log.info "$MOUNT_POINT already mounted"
     fi
 
-    # Формируем строку экспорта
-    bashio::log.info "Generating NFS export line for $MOUNT_POINT..."
-    OPTIONS=$(echo "${entry}" | base64 --decode | jq -r '.value.nfs_options | join(" ")')
-    echo "$MOUNT_POINT $OPTIONS" >> /etc/exports
+    # Формируем строки экспорта NFS
+    bashio::log.info "Generating NFS exports for $MOUNT_POINT..."
+
+    # Получаем массив NFS опций и добавляем в exports
+    echo "$mount" | jq -r '.nfs_options[]' | while read -r nfs_option; do
+        echo "$MOUNT_POINT $nfs_option" >> /etc/exports
+        bashio::log.info "Added export: $MOUNT_POINT $nfs_option"
+    done
 done
 
+# Проверяем, что есть хотя бы один экспорт
+if [ ! -s /etc/exports ]; then
+    bashio::log.warning "No exports configured"
+    exit 0
+fi
+
+# Выводим итоговый файл exports для отладки
+bashio::log.info "Final /etc/exports:"
+cat /etc/exports
+
+# Запускаем NFS сервер
 bashio::log.info "Starting NFS server..."
-rpcbind
-exportfs -a
+
+# Запускаем rpcbind если не запущен
+if ! pgrep -x rpcbind > /dev/null; then
+    bashio::log.info "Starting rpcbind..."
+    rpcbind
+    sleep 1
+fi
+
+# Применяем экспорты
+bashio::log.info "Applying exports..."
+exportfs -ra
+
+# Запускаем NFS демон
+bashio::log.info "Starting NFS daemon..."
 rpc.nfsd
+
+# Запускаем mount daemon в foreground режиме
+bashio::log.info "Starting mount daemon..."
 rpc.mountd -F
