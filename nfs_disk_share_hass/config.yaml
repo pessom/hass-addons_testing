@@ -39,7 +39,7 @@ schema:
       uuid: str?
       dev: str?
       point: str
-      fstype: str
+      fstype: str?
       readonly: bool?
       nfs_options:
         - str
