@@ -16,9 +16,10 @@ privileged:
   - DAC_READ_SEARCH
   - SYS_MODULE
 host_network: true
-devices:
-  - /dev/sd
-full_access: false
+#devices:
+#  - /dev/sd
+full_access: true
+host_dbus: true
 options:
   mounts:
     - name: "media_share"
